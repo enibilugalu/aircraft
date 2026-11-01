@@ -1,9 +1,5 @@
 const body = document.body
 
-const h1 = document.createElement('h1')
-h1.innerText = 'Aircraft & Flights'
-body.append(h1)
-
 const mainContainer = document.createElement('div')
 mainContainer.className = 'main-container'
 body.append(mainContainer)
@@ -30,28 +26,28 @@ const btn = document.createElement('button')
 btn.innerText = 'Показать самолёты'
 
 const btn5 = document.createElement('button')
-btn5.className = 'btn-count'
+btn5.className = 'btn-preset'
 btn5.innerText = '5 карточек'
 
 const btn10 = document.createElement('button')
-btn10.className = 'btn-count'
+btn10.className = 'btn-preset'
 btn10.innerText = '10 карточек'
 
 const btn15 = document.createElement('button')
-btn15.className = 'btn-count'
+btn15.className = 'btn-preset'
 btn15.innerText = '15 карточек'
 
-btn5.addEventListener('click', () => {
+btn5.addEventListener('click', () =>{
     countInput.value = 5
     loadAircraft()
 })
 
-btn10.addEventListener('click', () => {
+btn10.addEventListener('click', () =>{
     countInput.value = 10
     loadAircraft()
 })
 
-btn15.addEventListener('click', () => {
+btn15.addEventListener('click', () =>{
     countInput.value = 15
     loadAircraft()
 })
@@ -67,41 +63,41 @@ const mapContainer = document.createElement('div')
 mapContainer.id = 'map'
 rightPanel.append(mapContainer)
 
-const map = L.map('map', { attributionControl: false }).setView([51.505, -0.09], 3)
+const map = L.map('map', { attributionControl: false }).setView([51.505, -0.09], 1)
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
 
 let mapLayers = []
 let loadedAircrafts = []
 
-function createIcon() {
+function createIcon(){
     const img = document.createElement('img')
     img.src = 'plane.svg'
     img.alt = 'Самолёт'
     img.classList.add('icon')
-    img.onerror = function() {
+    img.onerror = function(){
         this.style.display = 'none'
     }
     return img
 }
 
-function createImageBox(url) {
+function createImageBox(url){
     const box = document.createElement('div')
     box.classList.add('image-box')
-    if (url) {
+    if(url){
         const img = document.createElement('img')
         img.src = url
-        img.onerror = function() {
+        img.onerror = function(){
             box.innerText = ''
             box.append(createIcon())
         }
         box.append(img)
-    } else {
+    }else{
         box.append(createIcon())
     }
     return box
 }
 
-function createItem(label, value) {
+function createItem(label, value){
     const item = document.createElement('div')
     item.classList.add('item')
     const labelEl = document.createElement('span')
@@ -109,12 +105,12 @@ function createItem(label, value) {
     labelEl.innerText = label
     const valueEl = document.createElement('span')
     valueEl.classList.add('value')
-    valueEl.innerText = value || 'нет данных'
+    valueEl.innerText = value
     item.append(labelEl, valueEl)
     return item
 }
 
-function showAircraft(data, index) {
+function showAircraft(data, index){
     const card = document.createElement('div')
     card.classList.add('card')
     
@@ -149,28 +145,29 @@ function showDetail(index){
     
     const coordsSection = document.createElement('div')
     coordsSection.className = 'coords-loading'
-    coordsSection.innerText = 'Загрузка координат...'
+    coordsSection.innerText = 'Загрузка координат маршрута'
     card.append(coordsSection)
     
     const backBtn = document.createElement('button')
-    backBtn.innerText = 'Назад к списку'
+    backBtn.innerText = '← Назад к списку'
     backBtn.addEventListener('click', showList)
     card.append(backBtn)
     
     result.append(card)
-
+    
     fetch('https://api.adsbdb.com/v0/callsign/random')
-    .then(r => r.json())
-    .then(data => {
-        coordsSection.innerText = ''
-        coordsSection.classList.add('coords')
-        
-        if (data.response && data.response.flightroute) {
-            const route = data.response.flightroute
-            const origin = route.origin 
-            const destination = route.destination 
+        .then(r => r.json())
+        .then(data =>{
+            coordsSection.innerText = ''
+            coordsSection.classList.add('coords')
             
-            let originCoords
+            if(data.response && data.response.flightroute){
+                const route = data.response.flightroute
+                const origin = route.origin
+                const destination = route.destination
+                
+                const originCoords = (origin.latitude && origin.longitude) 
+                const destCoords = (destination.latitude && destination.longitude)
                 
                 coordsSection.append(createItem('Аэропорт отправления', origin.name))
                 coordsSection.append(createItem('Координаты отправления', originCoords))
@@ -178,84 +175,63 @@ function showDetail(index){
                 coordsSection.append(createItem('Координаты прибытия', destCoords))
                 
                 mapLayers.forEach(layer => map.removeLayer(layer))
-                mapLayers = []}
+                mapLayers = []
                 
-                // if (origin.latitude && destination.latitude) {
-                    // const m1 = L.marker([origin.latitude, origin.longitude]).addTo(map)
-                    // .bindPopup(`${origin.longitude} место отправления ${origin.name}`).openPopup()
-
-                    // const m2 = L.marker([destination.latitude, destination.longitude]).addTo(map)
-                    // .bindPopup(`${destination.longitude} место прибытия ${destination.name}`).openPopup()
-
-                    // mapLayers.push(m1, m2)
-
+                if(origin.latitude && destination.latitude){
+                    const originCoords = [origin.latitude, origin.longitude]
+                    const destinationCoords = [destination.latitude, destination.longitude]
                     
-                    // const m1 = L.marker([origin.latitude, origin.longitude]).addTo(map)
-                    //     .bindPopup(`<b>Отправление:</b><br>${origin.name || 'нет данных'}`)
-                    // const m2 = L.marker([destination.latitude, destination.longitude]).addTo(map)
-                    //     .bindPopup(`<b>Прибытие:</b><br>${destination.name || 'нет данных'}`)
-                    // const line = L.polyline(
-                    //     [[origin.latitude, origin.longitude], [destination.latitude, destination.longitude]], 
-                    //     { color: '#2e7d32', weight: 3, dashArray: '10, 5' }
-                    // ).addTo(map)
+                    const originMarker = L.marker(originCoords)
+                        .bindPopup(`Отправление: ${origin.name}`).addTo(map)
                     
-                    // mapLayers.push(m1, m2, line)
-                    // map.fitBounds(L.featureGroup([m1, m2]).getBounds().pad(0.2))
-    })
+                    const destinationMarker = L.marker(destinationCoords)
+                        .bindPopup(`Прибытие: ${destination.name}`).addTo(map)
+                    
+                    const routeLine = L.polyline([originCoords, destinationCoords], {
+                        className: 'flight-route-line'
+                    }).addTo(map)
+                    
+                    mapLayers.push(originMarker, destinationMarker, routeLine)
+                }
+            }else{
+                coordsSection.innerText = 'нет данных о маршруте'
+            }
+        })
+        .catch(() =>{
+            coordsSection.innerText = 'Ошибка загрузки координат'
+        })
+}
 
-function showList() {
+function showList(){
     result.innerText = ''
     loadedAircrafts.forEach((aircraft, idx) => showAircraft(aircraft, idx))
 }
 
-function loadAircraft() {
+function loadAircraft(){
     let count = parseInt(countInput.value) || 1
-    if (count > 15) count = 15
-    if (count < 1) count = 1
-    
-    result.innerText = ''
-    btn.innerText = 'Загрузка...'
-    btn.disabled = true
+    if(count > 15) count = 15
+    if(count < 1) count = 1
     loadedAircrafts = []
     
     mapLayers.forEach(layer => map.removeLayer(layer))
     mapLayers = []
     
     let loadedCount = 0
-    let totalCount = count
     
-    for (let i = 0; i < count; i++) {
+    for(let i = 0; i < count; i++){
         fetch('https://api.adsbdb.com/v0/aircraft/random')
             .then(r => r.json())
-            .then(data => {
-                if (data.response && data.response.aircraft) {
+            .then(data =>{
+                if(data.response && data.response.aircraft){
                     const aircraft = data.response.aircraft
                     loadedAircrafts.push(aircraft)
-                    showAircraft(aircraft, loadedAircrafts.length - 1)
+                    showAircraft(aircraft, loadedAircrafts.length)
                 }
                 loadedCount++
                 checkIfDone()
             })
-            .catch(() => {
-                loadedCount++
-                checkIfDone()
-            })
-    }
-    
-    function checkIfDone() {
-        if (loadedCount === totalCount) {
-            btn.innerText = 'Показать самолёты'
-            btn.disabled = false
-            
-            if (loadedAircrafts.length === 0) {
-                const empty = document.createElement('div')
-                empty.className = 'empty'
-                empty.innerText = 'Не удалось загрузить самолёты'
-                result.append(empty)
-            }
-        }
-    }
-}
+    }}
+
 
 btn.addEventListener('click', loadAircraft)
 loadAircraft()
