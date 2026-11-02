@@ -1,5 +1,121 @@
 const body = document.body
+function loadAircraft() {
+    let count = parseInt(countInput.value) || 1
+    if (count > 15) count = 15
+    if (count < 1) count = 1
+    
+    loadedAircrafts = []
+    result.innerText = 'Загрузка данных...'
+    
+    mapLayers.forEach(layer => map.removeLayer(layer))
+    mapLayers = []
+    
+    let loadedCount = 0
+    
+    for (let i = 0; i < count; i++) {
+        fetch('https://api.adsbdb.com/v0/aircraft/random')
+            .then(r => r.json())
+            .then(data => {
+                if (data.response && data.response.aircraft) {
+                    const aircraft = data.response.aircraft
+                    loadedAircrafts.push(aircraft)
+                    showAircraft(aircraft, loadedAircrafts.length - 1)
+                }
+                loadedCount++
+            })
+            .catch(err => {
+                console.error("Ошибка при загрузке самолёта:", err)
+                loadedCount++
+            })
+    }
+}
 
+function showDetail(index) {
+    const aircraft = loadedAircrafts[index]
+    
+    if (!aircraft) {
+        console.error("Данные о самолёте не найдены по индексу:", index)
+        result.innerText = "Ошибка: данные не найдены"
+        return
+    }
+
+    result.innerText = ''
+    
+    const card = document.createElement('div')
+    card.classList.add('card', 'detail-card')
+    
+    card.append(createImageBox(aircraft.url_photo))
+    card.append(createItem('Регистрация', aircraft.registration))
+    card.append(createItem('Mode S', aircraft.mode_s))
+    card.append(createItem('Тип', aircraft.type))
+    card.append(createItem('Производитель', aircraft.manufacturer))
+    card.append(createItem('Владелец', aircraft.registered_owner))
+    card.append(createItem('Страна', aircraft.registered_owner_country_name))
+    
+    const coordsSection = document.createElement('div')
+    coordsSection.className = 'coords-loading'
+    coordsSection.innerText = 'Загрузка координат маршрута'
+    card.append(coordsSection)
+    
+    const backBtn = document.createElement('button')
+    backBtn.innerText = 'Назад к списку'
+    backBtn.addEventListener('click', showList)
+    card.append(backBtn)
+    
+    result.append(card)
+    
+    fetch('https://api.adsbdb.com/v0/callsign/random')
+        .then(r => r.json())
+        .then(data => {
+            coordsSection.innerText = ''
+            coordsSection.classList.add('coords')
+            
+            if (data.response && data.response.flightroute) {
+                const route = data.response.flightroute
+                const origin = route.origin
+                const destination = route.destination
+                
+                const originCoords = (origin.latitude && origin.longitude) 
+                    ? `${origin.latitude}, ${origin.longitude}` 
+                    : 'Нет данных'
+                const destCoords = (destination.latitude && destination.longitude) 
+                    ? `${destination.latitude}, ${destination.longitude}` 
+                    : 'Нет данных'
+                
+                coordsSection.append(createItem('Аэропорт отправления', origin.name))
+                coordsSection.append(createItem('Координаты отправления', originCoords))
+                coordsSection.append(createItem('Аэропорт прибытия', destination.name))
+                coordsSection.append(createItem('Координаты прибытия', destCoords))
+                
+                mapLayers.forEach(layer => map.removeLayer(layer))
+                mapLayers = []
+                
+                if (origin.latitude && destination.latitude) {
+                    const originMarkerCoords = [origin.latitude, origin.longitude]
+                    const destinationMarkerCoords = [destination.latitude, destination.longitude]
+                    
+                    const originMarker = L.marker(originMarkerCoords)
+                        .bindPopup(`Отправление: ${origin.name}`).addTo(map)
+                    
+                    const destinationMarker = L.marker(destinationMarkerCoords)
+                        .bindPopup(`Прибытие: ${destination.name}`).addTo(map)
+                    
+                    const routeLine = L.polyline([originMarkerCoords, destinationMarkerCoords], {
+                        className: 'flight-route-line'
+                    }).addTo(map)
+                    
+                    mapLayers.push(originMarker, destinationMarker, routeLine)
+                    
+                    map.fitBounds(routeLine.getBounds(), { padding: [50, 50] })
+                }
+            } else {
+                coordsSection.innerText = 'нет данных о маршруте'
+            }
+        })
+        .catch(() => {
+            coordsSection.innerText = 'Ошибка загрузки координат'
+        })
+}
 const mainContainer = document.createElement('div')
 mainContainer.className = 'main-container'
 body.append(mainContainer)
