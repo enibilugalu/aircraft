@@ -76,11 +76,9 @@ function showDetail(index) {
                 const destination = route.destination
                 
                 const originCoords = (origin.latitude && origin.longitude) 
-                    ? `${origin.latitude}, ${origin.longitude}` 
-                    : 'Нет данных'
+                    ? `${origin.latitude}, ${origin.longitude}` : 'Нет данных'
                 const destCoords = (destination.latitude && destination.longitude) 
-                    ? `${destination.latitude}, ${destination.longitude}` 
-                    : 'Нет данных'
+                    ? `${destination.latitude}, ${destination.longitude}` : 'Нет данных'
                 
                 coordsSection.append(createItem('Аэропорт отправления', origin.name))
                 coordsSection.append(createItem('Координаты отправления', originCoords))
@@ -105,8 +103,6 @@ function showDetail(index) {
                     }).addTo(map)
                     
                     mapLayers.push(originMarker, destinationMarker, routeLine)
-                    
-                    map.fitBounds(routeLine.getBounds(), { padding: [50, 50] })
                 }
             } else {
                 coordsSection.innerText = 'нет данных о маршруте'
