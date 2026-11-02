@@ -149,7 +149,7 @@ function showDetail(index){
     card.append(coordsSection)
     
     const backBtn = document.createElement('button')
-    backBtn.innerText = '← Назад к списку'
+    backBtn.innerText = 'Назад к списку'
     backBtn.addEventListener('click', showList)
     card.append(backBtn)
     
