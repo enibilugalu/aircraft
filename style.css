@@ -201,12 +201,6 @@ button:disabled{
     border-radius: 12px;
 }
 
-.flight-route-line{
-    stroke: #2e7d32;
-    stroke-width: 3px;
-    stroke-dasharray: 10, 5;
-}
-
 .leaflet-popup-content{
     font-size: 16px;
     font-family: Arial, sans-serif;
