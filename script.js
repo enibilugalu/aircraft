@@ -212,7 +212,7 @@ function showList(){
 }
 
 function loadAircraft(){
-    let count = parseInt(countInput.value) || 1
+    let count = parseInt(countInput.value)
     if (count > 15) count = 15
     if (count < 1) count = 1
     
@@ -231,7 +231,7 @@ function loadAircraft(){
                 if (data.response && data.response.aircraft) {
                     const aircraft = data.response.aircraft
                     loadedAircrafts.push(aircraft)
-                    showAircraft(aircraft, loadedAircrafts.length - 1)
+                    showAircraft(aircraft, loadedAircrafts.length)
                 }
                 loadedCount++
             })
