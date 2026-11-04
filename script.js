@@ -224,14 +224,14 @@ function loadAircraft(){
     
     let loadedCount = 0
     
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++){
         fetch('https://api.adsbdb.com/v0/aircraft/random')
             .then(r => r.json())
             .then(data => {
-                if (data.response && data.response.aircraft) {
+                if (data.response && data.response.aircraft){
                     const aircraft = data.response.aircraft
                     loadedAircrafts.push(aircraft)
-                    showAircraft(aircraft, loadedAircrafts.length)
+                    showAircraft(aircraft, loadedAircrafts.length - 1)  
                 }
                 loadedCount++
             })
