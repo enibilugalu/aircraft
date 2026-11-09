@@ -4,6 +4,11 @@ const mainContainer = document.createElement('div')
 mainContainer.classList.add('main-container')
 body.append(mainContainer)
 
+const header = document.createElement('div')
+header.classList.add('header')
+header.innerText = 'AIRCRAFT'
+body.prepend(header)
+
 const leftPanel = document.createElement('div')
 leftPanel.classList.add('left-panel')
 mainContainer.append(leftPanel)
@@ -63,7 +68,7 @@ const mapContainer = document.createElement('div')
 mapContainer.id = 'map'
 rightPanel.append(mapContainer)
 
-const map = L.map('map', { attributionControl: false }).setView([51.505, -0.09], 1)
+const map = L.map('map', { attributionControl: false }).setView([31.505, 14.09], 2 )
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
 
 let mapLayers = []
@@ -235,13 +240,26 @@ function loadAircraft(){
                 }
                 loadedCount++
             })
-            .catch(err => {
-                console.error("Ошибка при загрузке самолёта", err)
-                loadedCount++
-            })
     }
 }
+
+const weatherKey = 'c538a72845d03c96bc5536da5502ed1d'
+const weathercard = document.createElement('div')
+weathercard.classList.add('weather')
+ mainContainer.append(weathercard)
+
+function loadWeather()
+{
+    let lat =  51.5
+    let lon = -0.1
+    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=44.34&q=Minsk&lon=10.99&appid=${weatherKey}`)
+    .then(r => r.json()).then(data =>{
+        console.log(data)
+    })
+}
+
 
 
 btn.addEventListener('click', loadAircraft)
 loadAircraft()
+loadWeather()
