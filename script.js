@@ -160,6 +160,8 @@ function showDetail(index){
         .then(data => {
             coordsSection.innerText = ''
             coordsSection.classList.add('coords')
+            // console.log('relCity', data.response.flightroute.destination.municipality)
+            loadWeather(data.response.flightroute.destination.municipality)
 
     backBtn.innerText = 'Назад к списку'
     backBtn.addEventListener('click', showList)
@@ -246,19 +248,35 @@ function loadAircraft(){
 const weatherKey = 'c538a72845d03c96bc5536da5502ed1d'
 const weathercard = document.createElement('div')
 weathercard.classList.add('weather')
- mainContainer.append(weathercard)
+ mainContainer.prepend(weathercard)
 
-function loadWeather()
-{
-    let lat =  51.5
-    let lon = -0.1
-    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=44.34&q=Minsk&lon=10.99&appid=${weatherKey}`)
+ 
+
+function loadWeather(city = 'Minsk')
+{/* 
+    fetch('https://api.adsbdb.com/v0/callsign/random')
+    .then(r => r.json())
+    .then(data => {
+       let city = data.response.flightroute.destination.municipality
+    }) */
+
+    fetch(`https://api.openweathermap.org/data/2.5/weather?&q=${city}&units=metric&appid=${weatherKey}`)
     .then(r => r.json()).then(data =>{
         console.log(data)
+        const temp = data.main.temp
+        const wind = data.wind.speed
+        const hum = data.main.humidity
+        weathercard.innerText = `Погода ${city}: ${temp ? 'Температура ' + temp +'°C' : ''} ${wind ? 'Скорость ветра ' + wind +' м/с' : ''} ${hum ? ' Влажность ' + hum +'%' : ''}`
     })
 }
 
+const currencycard = document.createElement('div')
+currencycard.classList.add('currency')
+mainContainer.prepend(currencycard)
 
+function loadCurrency(){
+
+}
 
 btn.addEventListener('click', loadAircraft)
 loadAircraft()
