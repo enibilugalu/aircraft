@@ -1,21 +1,25 @@
 const body = document.body
+const enter_btn = document.createElement('button')
+enter_btn.classList.add('enter')
+enter_btn.innerText = 'enter'
+body.append(enter_btn)
 
 const mainContainer = document.createElement('div')
 mainContainer.classList.add('main-container')
-body.append(mainContainer)
+// body.append(mainContainer)
 
 const header = document.createElement('div')
 header.classList.add('header')
 header.innerText = 'AIRCRAFT'
-body.prepend(header)
+// body.prepend(header)
 
 const leftPanel = document.createElement('div')
 leftPanel.classList.add('left-panel')
-mainContainer.append(leftPanel)
+// mainContainer.append(leftPanel)
 
 const rightPanel = document.createElement('div')
 rightPanel.classList.add('right-panel')
-mainContainer.append(rightPanel)
+// mainContainer.append(rightPanel)
 
 const controls = document.createElement('div')
 controls.classList.add('controls')
@@ -57,19 +61,19 @@ btn15.addEventListener('click', () =>{
     loadAircraft()
 })
 
-controls.append(countInput, btn, btn5, btn10, btn15)
-leftPanel.append(controls)
+// controls.append(countInput, btn, btn5, btn10, btn15)
+// leftPanel.append(controls)
 
 const result = document.createElement('div')
 result.id = 'result'
-leftPanel.append(result)
+// leftPanel.append(result)
 
-const mapContainer = document.createElement('div')
-mapContainer.id = 'map'
-rightPanel.append(mapContainer)
+// const mapContainer = document.createElement('div')
+// mapContainer.id = 'map'
+// rightPanel.append(mapContainer)
 
-const map = L.map('map', { attributionControl: false }).setView([31.505, 14.09], 2 )
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
+// const map = L.map('map', { attributionControl: false }).setView([31.505, 14.09], 2 )
+// L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
 
 let mapLayers = []
 let loadedAircrafts = []
@@ -126,7 +130,7 @@ function showAircraft(data, index){
     result.append(card)
 }
 
-function showDetail(index){
+function showDetail(index, map){
     const aircraft = loadedAircrafts[index]
     
     if (!aircraft) {
@@ -203,9 +207,9 @@ function showDetail(index){
                 coordsSection.innerText = 'нет данных о маршруте'
             }
         })
-        .catch(() => {
-            coordsSection.innerText = 'Ошибка загрузки координат'
-        })
+        // .catch(() => {
+        //     coordsSection.innerText = 'Ошибка загрузки координат'
+        // })
 
         const backBtn = document.createElement('button')
     
@@ -238,7 +242,7 @@ function loadAircraft(){
                 if (data.response && data.response.aircraft){
                     const aircraft = data.response.aircraft
                     loadedAircrafts.push(aircraft)
-                    showAircraft(aircraft, loadedAircrafts.length - 1)  
+                    showAircraft(aircraft, loadedAircrafts.length)  
                 }
                 loadedCount++
             })
@@ -266,18 +270,39 @@ function loadWeather(city = 'Minsk')
         const temp = data.main.temp
         const wind = data.wind.speed
         const hum = data.main.humidity
-        weathercard.innerText = `Погода ${city}: ${temp ? 'Температура ' + temp +'°C' : ''} ${wind ? 'Скорость ветра ' + wind +' м/с' : ''} ${hum ? ' Влажность ' + hum +'%' : ''}`
+        weathercard.innerText = `Погода ${city}:
+         ${temp ? 'Температура ' + temp +'°C' : ''}
+         ${wind ? 'Скорость ветра ' + wind +' м/с' : ''}
+          ${hum ? ' Влажность ' + hum +'%' : ''}`
     })
 }
 
-const currencycard = document.createElement('div')
-currencycard.classList.add('currency')
-mainContainer.prepend(currencycard)
 
-function loadCurrency(){
 
-}
+function enter(){
+
+    enter_btn.addEventListener('click', () =>{
+body.append(mainContainer)
+body.prepend(header)
+mainContainer.append(leftPanel)
+mainContainer.append(rightPanel)
+// controls.classList.add('controls')
+controls.append(countInput, btn, btn5, btn10, btn15)
+leftPanel.append(controls)
+leftPanel.append(result)
+const mapContainer = document.createElement('div')
+mapContainer.id = 'map'
+rightPanel.append(mapContainer)
+
+const map = L.map('map', { attributionControl: false }).setView([31.505, 14.09], 2 )
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
 
 btn.addEventListener('click', loadAircraft)
 loadAircraft()
 loadWeather()
+
+enter_btn.remove()
+    })
+}
+
+enter()
