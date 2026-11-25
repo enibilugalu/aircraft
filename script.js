@@ -37,7 +37,7 @@ logOutbtn.innerText = 'Выйти'
 logOutbtn.style.marginTop = '20px'
 logOutbtn.addEventListener('click', logOut)
 
-loginForm.addEventListener('submit', (e) => {
+loginForm.addEventListener('submit', (e) =>{
     e.preventDefault()
     
     savedLogin = loginInput.value
@@ -88,9 +88,9 @@ const btn15 = document.createElement('button')
 btn15.classList.add('btn-preset')
 btn15.innerText = '15 карточек'
 
-btn5.addEventListener('click', () => { countInput.value = 5; loadAircraft() })
-btn10.addEventListener('click', () => { countInput.value = 10; loadAircraft() })
-btn15.addEventListener('click', () => { countInput.value = 15; loadAircraft() })
+btn5.addEventListener('click', () =>{ countInput.value = 5; loadAircraft() })
+btn10.addEventListener('click', () =>{ countInput.value = 10; loadAircraft() })
+btn15.addEventListener('click', () =>{ countInput.value = 15; loadAircraft() })
 
 controls.append(countInput, btn, btn5, btn10, btn15)
 leftPanel.append(controls)
@@ -102,7 +102,7 @@ leftPanel.append(result)
 const weathercard = document.createElement('div')
 weathercard.classList.add('weather')
 
-function createIcon() {
+function createIcon(){
     const img = document.createElement('img')
     img.src = 'plane.svg'
     img.alt = 'Самолёт'
@@ -110,24 +110,24 @@ function createIcon() {
     return img
 }
 
-function createImageBox(url) {
+function createImageBox(url){
     const box = document.createElement('div')
     box.classList.add('image-box')
-    if (url) {
+    if (url){
         const img = document.createElement('img')
         img.src = url
-        img.onerror = function() {
+        img.onerror = function(){
             this.style.display = 'none'
             box.append(createIcon())
         }
         box.append(img)
-    } else {
+    } else{
         box.append(createIcon())
     }
     return box
 }
 
-function createItem(label, value) {
+function createItem(label, value){
     const item = document.createElement('div')
     item.classList.add('item')
     const labelEl = document.createElement('span')
@@ -140,7 +140,7 @@ function createItem(label, value) {
     return item
 }
 
-function showAircraft(data, index) {
+function showAircraft(data, index){
     const card = document.createElement('div')
     card.classList.add('card')
     
@@ -158,25 +158,25 @@ function showAircraft(data, index) {
     result.append(card)
 }
 
-function renderRoute(route, container) {
+function renderRoute(route, container){
     const origin = route.origin
     const destination = route.destination
     
     container.append(createItem('Аэропорт отправления', origin.name))
-    if (origin.latitude && origin.longitude) {
+    if (origin.latitude && origin.longitude){
         container.append(createItem('Координаты отправления', `${origin.latitude}, ${origin.longitude}`))
     }
     
     container.append(createItem('Аэропорт прибытия', destination.name))
-    if (destination.latitude && destination.longitude) {
+    if (destination.latitude && destination.longitude){
         container.append(createItem('Координаты прибытия', `${destination.latitude}, ${destination.longitude}`))
     }
 
-    if (map) {
+    if (map){
         mapLayers.forEach(layer => map.removeLayer(layer))
         mapLayers = []
         
-        if (origin.latitude && origin.longitude && destination.latitude && destination.longitude) {
+        if (origin.latitude && origin.longitude && destination.latitude && destination.longitude){
             const originCoords = [origin.latitude, origin.longitude]
             const destCoords = [destination.latitude, destination.longitude]
             
@@ -194,10 +194,10 @@ function renderRoute(route, container) {
     }
 }
 
-function showDetail(index) {
+function showDetail(index){
     const aircraft = loadedAircrafts[index]
     
-    if (!aircraft) {
+    if (!aircraft){
         result.innerText = "данные не найдены"
         return
     }
@@ -218,13 +218,13 @@ function showDetail(index) {
     const coordsSection = document.createElement('div')
     coordsSection.classList.add('coords')
     
-    if (aircraft.cachedRoute) {
+    if (aircraft.cachedRoute){
         renderRoute(aircraft.cachedRoute, coordsSection)
         
-        if (aircraft.cachedRoute.destination && aircraft.cachedRoute.destination.municipality) {
+        if (aircraft.cachedRoute.destination && aircraft.cachedRoute.destination.municipality){
             loadWeather(aircraft.cachedRoute.destination.municipality)
         }
-    } else {
+    } else{
         coordsSection.innerText = 'нет данных о маршруте'
     }
     
@@ -238,17 +238,17 @@ function showDetail(index) {
     result.append(card)
 }
 
-function showList() {
+function showList(){
     result.innerText = ''
     loadedAircrafts.forEach((aircraft, idx) => showAircraft(aircraft, idx))
-    if (map) {
+    if (map){
         map.flyTo([31.505, 14.09], 2)
         mapLayers.forEach(layer => map.removeLayer(layer)) 
         mapLayers = []
     }
 }
 
-function loadAircraft() {
+function loadAircraft(){
     let count = parseInt(countInput.value)
     if (count > 15) count = 15
     if (count < 1) count = 1
@@ -256,22 +256,22 @@ function loadAircraft() {
     loadedAircrafts = []
     result.innerText = ''
     
-    if (map) {
+    if (map){
         mapLayers.forEach(layer => map.removeLayer(layer))
         mapLayers = []
     }
     
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++){
         fetch('https://api.adsbdb.com/v0/callsign/random')
             .then(r => r.json())
-            .then(routeData => {
-                if (routeData.response && routeData.response.flightroute) {
+            .then(routeData =>{
+                if (routeData.response && routeData.response.flightroute){
                     const route = routeData.response.flightroute
                     
                     fetch('https://api.adsbdb.com/v0/aircraft/random')
                         .then(r => r.json())
-                        .then(acData => {
-                            if (acData.response && acData.response.aircraft) {
+                        .then(acData =>{
+                            if (acData.response && acData.response.aircraft){
                                 const aircraft = acData.response.aircraft
                                 aircraft.callsign = route.callsign
                                 aircraft.cachedRoute = route
@@ -279,7 +279,7 @@ function loadAircraft() {
                                 loadedAircrafts.push(aircraft)
                                 showAircraft(aircraft, loadedAircrafts.length - 1)
                                 
-                                if (result.innerText === 'Загрузка...') {
+                                if (result.innerText === 'Загрузка...'){
                                     result.innerText = ''
                                 }
                             }
@@ -291,23 +291,24 @@ function loadAircraft() {
 
 const weatherKey = 'c538a72845d03c96bc5536da5502ed1d'
 
-function loadWeather(city = 'Minsk') {
+function loadWeather(city = 'Minsk'){
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${weatherKey}`)
         .then(r => r.json())
-        .then(data => {
+        .then(data =>{
             const temp = data.main.temp
             const wind = data.wind.speed
             const hum = data.main.humidity
-            weathercard.innerText = `Погода ${city}: ${temp ? 'Температура ' + temp + '°C' : ''} 
+            weathercard.innerText = `Погода ${city}: 
+            ${temp ? 'Температура ' + temp + '°C' : ''} 
             ${wind ? 'Скорость ветра ' + wind + ' м/с' : ''} 
             ${hum ? 'Влажность ' + hum + '%' : ''}`
         })
-        .catch(() => {
+        .catch(() =>{
             weathercard.innerText = 'Ошибка загрузки погоды'
         })
 }
 
-function init() {
+function init(){
     body.prepend(header)
     body.append(mainContainer)
     mainContainer.prepend(weathercard)
@@ -320,7 +321,7 @@ function init() {
     mapContainer.id = 'map'
     rightPanel.append(mapContainer)
 
-    map = L.map('map', { attributionControl: false }).setView([31.505, 14.09], 2)
+    map = L.map('map',{ attributionControl: false }).setView([31.505, 14.09], 2)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
 
     btn.addEventListener('click', loadAircraft)
@@ -328,8 +329,8 @@ function init() {
     loadWeather()
 }
 
-function logOut() {
-    if (map) {
+function logOut(){
+    if (map){
         map.remove()
         map = null
     }
@@ -344,10 +345,10 @@ function logOut() {
     body.append(loginForm)
 }
 
-if (localStorage.getItem('login') && localStorage.getItem('password')) {
+if (localStorage.getItem('login') && localStorage.getItem('password')){
     savedLogin = localStorage.getItem('login')
     savedPassword = localStorage.getItem('password')
     init()
-} else {
+} else{
     body.append(loginForm)
 }
